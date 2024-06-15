@@ -3,6 +3,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+yes_no_conversion = {'yes': 1, 'no': 0}
+furnishing_conversion = {'furnished': 3, 'semi-furnished': 2, 'unfurnished': 1}
+
 df = pd.read_csv('Housing.csv', delimiter=',')
 y = df.iloc[:,0]
 X = df.iloc[:,1:-1]
