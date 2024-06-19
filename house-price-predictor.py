@@ -29,7 +29,7 @@ for column in yes_no_columns:
 df['furnishingstatus'] = df['furnishingstatus'].map(furnishing_conversion)
 
 y = df.iloc[:,0]
-X = df.iloc[:,1:-1]
+X = df.iloc[:,1:]
 
 X = torch.tensor(X.values, dtype=torch.float32)
 y = torch.tensor(y.values, dtype=torch.float32).reshape(-1, 1)
