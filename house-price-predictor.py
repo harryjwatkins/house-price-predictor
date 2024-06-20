@@ -36,7 +36,7 @@ y = torch.tensor(y.values, dtype=torch.float32).reshape(-1, 1)
 
 model = PimaClassifier()
 
-loss_fn = nn.BCELoss()  # binary cross entropy
+loss_fn = nn.L1Loss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 number_of_epochs = 100
