@@ -3,20 +3,16 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-class PimaClassifier(nn.Module):
+class HousePricePredictor(nn.Module):
     def __init__(self):
-        super().__init__()
-        self.hidden1 = nn.Linear(12, 12)
-        self.act1 = nn.ReLU()
-        self.hidden2 = nn.Linear(12, 12)
-        self.act2 = nn.ReLU()
-        self.output = nn.Linear(12, 1)
-        self.act_output = nn.Sigmoid()
+        super(HousePricePredictor, self).__init__()
+        self.layers == nn.Sequential(
+            nn.Linear(12, 12),
+            nn.Linear(12, 1)
+        )
  
     def forward(self, x):
-        x = self.act1(self.hidden1(x))
-        x = self.act2(self.hidden2(x))
-        x = self.act_output(self.output(x))
+        x = self.layers(x)
         return x
 
 yes_no_columns = ['mainroad', 'guestroom', 'basement', 'hotwaterheating', 'airconditioning', 'prefarea']
@@ -34,10 +30,10 @@ X = df.iloc[:,1:]
 X = torch.tensor(X.values, dtype=torch.float32)
 y = torch.tensor(y.values, dtype=torch.float32).reshape(-1, 1)
 
-model = PimaClassifier()
+model = HousePricePredictor()
 
 loss_fn = nn.L1Loss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.SGD(model.parameters(), lr=0.01)
 
 number_of_epochs = 100
 batch_size = 10
