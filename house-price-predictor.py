@@ -4,16 +4,20 @@ import torch.nn as nn
 import torch.optim as optim
 
 class HousePricePredictor(nn.Module):
-    def __init__(self):
+    def __init__(self, D_in, H1, H2, H3, D_out):
         super(HousePricePredictor, self).__init__()
-        self.layers == nn.Sequential(
-            nn.Linear(12, 12),
-            nn.Linear(12, 1)
-        )
- 
+        
+        self.linear1 = nn.Linear(D_in, H1)
+        self.linear2 = nn.Linear(H1, H2)
+        self.linear3 = nn.Linear(H2, H3)
+        self.linear4 = nn.Linear(H3, D_out)
+        
     def forward(self, x):
-        x = self.layers(x)
-        return x
+        y_pred = self.linear1(x).clamp(min=0)
+        y_pred = self.linear2(y_pred).clamp(min=0)
+        y_pred = self.linear3(y_pred).clamp(min=0)
+        y_pred = self.linear4(y_pred)
+        return y_pred
 
 yes_no_columns = ['mainroad', 'guestroom', 'basement', 'hotwaterheating', 'airconditioning', 'prefarea']
 yes_no_conversion = {'yes': 1, 'no': 0}
@@ -30,10 +34,12 @@ X = df.iloc[:,1:]
 X = torch.tensor(X.values, dtype=torch.float32)
 y = torch.tensor(y.values, dtype=torch.float32).reshape(-1, 1)
 
-model = HousePricePredictor()
+H1, H2, H3 = 500, 1000, 200
+D_in, D_out = X.shape[1], y.shape[1]
+model = HousePricePredictor(D_in, H1, H2, H3, D_out)
 
-loss_fn = nn.L1Loss()
-optimizer = optim.SGD(model.parameters(), lr=0.01)
+loss_fn = nn.MSELoss(reduction='sum')
+optimizer = optim.SGD(model.parameters(), lr=1e-4)
 
 number_of_epochs = 100
 batch_size = 10
