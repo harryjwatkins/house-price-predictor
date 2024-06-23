@@ -28,6 +28,7 @@ for column in yes_no_columns:
     df[column] = df[column].map(yes_no_conversion)
 df['furnishingstatus'] = df['furnishingstatus'].map(furnishing_conversion)
 
+df = (df - df.mean()) / (df.max() - df.min())
 y = df.iloc[:,0]
 X = df.iloc[:,1:]
 
@@ -41,18 +42,26 @@ model = HousePricePredictor(D_in, H1, H2, H3, D_out)
 loss_fn = nn.MSELoss(reduction='sum')
 optimizer = optim.SGD(model.parameters(), lr=1e-4)
 
-number_of_epochs = 100
-batch_size = 10
+means, maxes, mins = dict(), dict(), dict()
+for col in df:
+    means[col] = df[col].mean()
+    maxes[col] = df[col].max()
+    mins[col] = df[col].min()
 
-for epoch in range(number_of_epochs):
-    for i in range(0, len(X), batch_size):
-        Xbatch = X[i:i+batch_size]
-        y_pred = model(Xbatch)
-        ybatch = y[i:i+batch_size]
-        loss = loss_fn(y_pred, ybatch)
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-    print(f'Finished epoch {epoch}, latest loss {loss}')
+losses = []
+
+for t in range(500):
+    y_pred = model(X)
+    
+    loss = loss_fn(y_pred, y)
+    print(t, loss.item())
+    losses.append(loss.item())
+    
+    if torch.isnan(loss):
+        break
+    
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
 
 
