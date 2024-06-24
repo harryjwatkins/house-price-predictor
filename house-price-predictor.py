@@ -40,7 +40,7 @@ D_in, D_out = X.shape[1], y.shape[1]
 model = HousePricePredictor(D_in, H1, H2, H3, D_out)
 
 loss_fn = nn.MSELoss(reduction='sum')
-optimizer = optim.SGD(model.parameters(), lr=1e-4)
+optimizer = optim.Adam(model.parameters(), lr=1e-4 * 2)
 
 means, maxes, mins = dict(), dict(), dict()
 for col in df:
