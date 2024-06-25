@@ -2,6 +2,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import matplotlib.pyplot as plt
 
 class HousePricePredictor(nn.Module):
     def __init__(self, D_in, H1, H2, H3, D_out):
@@ -54,7 +55,6 @@ for t in range(500):
     y_pred = model(X)
     
     loss = loss_fn(y_pred, y)
-    print(t, loss.item())
     losses.append(loss.item())
     
     if torch.isnan(loss):
@@ -64,4 +64,5 @@ for t in range(500):
     loss.backward()
     optimizer.step()
 
-
+plt.plot(losses)
+plt.show()
